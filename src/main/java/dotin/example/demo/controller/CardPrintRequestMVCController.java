@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
@@ -57,7 +58,7 @@ public class CardPrintRequestMVCController implements ProcessedBean {
 
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @ActivityLogAnnotation
-    public String saveCardPrintRequest(@ModelAttribute("request") @Valid CardPrintRequest cardPrintRequest, BindingResult bindingResult, ModelMap model) {
+    public String saveCardPrintRequest(@ModelAttribute("request") @Valid CardPrintRequest cardPrintRequest, BindingResult bindingResult, Model model) {
         if (bindingResult.hasErrors()) {
             return "new_request";
         }

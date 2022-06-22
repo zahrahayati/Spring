@@ -6,7 +6,6 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -23,7 +22,7 @@ public class BeanPostProcessorSample implements BeanPostProcessor {
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         Scope annotation = AnnotationUtils.getAnnotation(bean.getClass(), Scope.class);
         if (annotation != null) {
-            if(annotation.value().equals(ConfigurableBeanFactory.SCOPE_SINGLETON)){
+            if (annotation.value().equals(ConfigurableBeanFactory.SCOPE_SINGLETON)) {
                 log.info("singleton bean name is : " + beanName);
             }
         }

@@ -23,7 +23,8 @@ public class CardPrintRequestEmbeddedId implements Serializable {
         this.branchCode = branchCode;
         this.ipAddress = ipAddress;
     }
-    public CardPrintRequestEmbeddedId(){
+
+    public CardPrintRequestEmbeddedId() {
 
     }
 

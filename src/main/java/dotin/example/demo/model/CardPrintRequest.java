@@ -4,12 +4,10 @@ package dotin.example.demo.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.*;
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
-
-
-import javax.persistence.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -42,9 +40,11 @@ public class CardPrintRequest {
         this.cardPAN = cardPAN;
         this.issuedDate = getDateWithoutTimeUsingFormat();
     }
-    public CardPrintRequest(){
+
+    public CardPrintRequest() {
 
     }
+
     public CardPrintRequest(CardPrintRequestEmbeddedId id, String cardPAN) throws ParseException {
         this.id = id;
         this.cardPAN = cardPAN;

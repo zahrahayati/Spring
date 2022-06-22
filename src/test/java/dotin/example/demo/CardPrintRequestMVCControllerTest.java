@@ -7,41 +7,30 @@ import dotin.example.demo.model.CardPrintRequestEmbeddedId;
 import dotin.example.demo.repository.CardPrintRequestJDBCTemplate;
 import dotin.example.demo.repository.CardPrintRequestRepository;
 import dotin.example.demo.service.CardPrintRequestService;
-import org.aspectj.lang.annotation.Before;
-
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.text.ParseException;
 import java.util.Arrays;
 
-import static org.mockito.Mockito.times;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.*;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CardPrintRequestMVCController.class)
 @AutoConfigureMockMvc
@@ -65,21 +54,25 @@ public class CardPrintRequestMVCControllerTest {
     @MockBean
     CardPrintRequestJDBCTemplate cardPrintRequestJDBCTemplate;
 
+    @BeforeEach
+    public void setup() throws Exception {
+        mockMvc = MockMvcBuilders
+                .webAppContextSetup(context)
+                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER", "ADMIN")))
+                .apply(springSecurity())
+                .build();
+    }
 
-    CardPrintRequest cardPrintRequest = new CardPrintRequest(new CardPrintRequestEmbeddedId("60", "10.20.152.15"), "6063731098404032", "74100");
+
+    CardPrintRequest cardPrintRequest = new CardPrintRequest(new CardPrintRequestEmbeddedId("600", "10.20.152.15"), "6063731098404032", "74100");
     CardPrintRequest cardPrintRequest1 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6071", "10.20.152.18"), "6063731098404055", "75120");
-    CardPrintRequest cardPrintRequest2 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "7450");
+    CardPrintRequest cardPrintRequest2 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "74501");
 
     public CardPrintRequestMVCControllerTest() throws ParseException {
     }
 
     @Test
     public void findAll_Test() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER","ADMIN")))
-                .apply(springSecurity())
-                .build();
 
         Mockito.when(cardPrintRequestRepository.findAll()).thenReturn(Arrays.asList(cardPrintRequest1, cardPrintRequest2, cardPrintRequest));
 
@@ -102,23 +95,19 @@ public class CardPrintRequestMVCControllerTest {
                         )
                 )))
                 .andExpect(model().attribute("requests", hasItem(
-                allOf(
-                        hasProperty("cardPAN", is("6063731098404055")),
-                        hasProperty("personnelCode", is("7450"))
+                        allOf(
+                                hasProperty("cardPAN", is("6063731098404055")),
+                                hasProperty("personnelCode", is("7450"))
 
-                )
-        )));
+                        )
+                )));
 
         verify(cardPrintRequestRepository, times(1)).findAll();
         verifyNoMoreInteractions(cardPrintRequestRepository);
     }
+
     @Test
     public void add_RequestAndPersonnelCodeIsMin_ShouldRenderFormViewAndReturnValidationErrorsForPersonnelCode() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER","ADMIN")))
-                .apply(springSecurity())
-                .build();
 
         mockMvc.perform(post("/save")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -132,17 +121,12 @@ public class CardPrintRequestMVCControllerTest {
                 .andExpect(view().name("new_request"))
                 .andExpect(forwardedUrl("/WEB-INF/JSP/new_request.jsp"))
                 .andExpect(model().attributeHasFieldErrors("request", "personnelCode"))
-                .andExpect(model().attribute("request", hasProperty("cardPAN",is("5022295630236"))));
+                .andExpect(model().attribute("request", hasProperty("cardPAN", is("5022295630236"))));
 
     }
 
     @Test
     public void add_RequestAndPersonnelCodeIsNull_ShouldRenderFormViewAndReturnValidationErrorsForPersonnelCode() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER","ADMIN")))
-                .apply(springSecurity())
-                .build();
 
         mockMvc.perform(post("/save")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -158,14 +142,9 @@ public class CardPrintRequestMVCControllerTest {
                 .andExpect(model().attribute("request", hasProperty("cardPAN", is("5022295630236"))));
 
     }
+
     @Test
     public void add_RequestAndPersonnelCodeIsMax_ShouldRenderFormViewAndReturnValidationErrorsForPersonnelCode() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER","ADMIN")))
-                .apply(springSecurity())
-                .build();
-        CardPrintRequest request = new CardPrintRequest(new CardPrintRequestEmbeddedId("6071", "10.20.152.18"), "6063731098404044");
 
         mockMvc.perform(post("/save")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -182,13 +161,9 @@ public class CardPrintRequestMVCControllerTest {
                 .andExpect(model().attribute("request", hasProperty("cardPAN", is("5022295630236"))));
 
     }
+
     @Test
     public void add_Request_Success() throws Exception {
-        mockMvc = MockMvcBuilders
-                .webAppContextSetup(context)
-                .defaultRequest(get("/login").with(user("admin").password("admin").roles("USER","ADMIN")))
-                .apply(springSecurity())
-                .build();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/save")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -199,14 +174,8 @@ public class CardPrintRequestMVCControllerTest {
                 .sessionAttr("request", new CardPrintRequest())
         )
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.model().attributeExists("branchCode"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("ipAddress"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("personnelCode"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("cardPAN"))
-                .andExpect(MockMvcResultMatchers.model().attributeExists("issuedDate"))
-                .andExpect(MockMvcResultMatchers.view().name("show_request"))
-                .andExpect(MockMvcResultMatchers.forwardedUrl("/WEB-INF/JSP/show_request.jsp"));
-
+                .andExpect(MockMvcResultMatchers.forwardedUrl("/WEB-INF/JSP/show_request.jsp"))
+                .andExpect(model().attribute("request", hasProperty("cardPAN", is("5022295630236"))));
 
 
     }

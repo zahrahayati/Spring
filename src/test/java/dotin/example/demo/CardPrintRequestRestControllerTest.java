@@ -22,10 +22,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.hamcrest.Matchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CardPrintRequestController.class)
@@ -42,16 +42,17 @@ public class CardPrintRequestRestControllerTest {
     @MockBean
     CardPrintRequestJDBCTemplate cardPrintRequestJDBCTemplate;
 
-    CardPrintRequest cardPrintRequest = new CardPrintRequest(new CardPrintRequestEmbeddedId("60", "10.20.152.15"), "6063731098404032", "74100");
+    CardPrintRequest cardPrintRequest = new CardPrintRequest(new CardPrintRequestEmbeddedId("600", "10.20.152.15"), "6063731098404032", "74100");
     CardPrintRequest cardPrintRequest1 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6071", "10.20.152.18"), "6063731098404055", "75120");
-    CardPrintRequest cardPrintRequest2 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "7450");
+    CardPrintRequest cardPrintRequest2 = new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "74501");
 
 
     public CardPrintRequestRestControllerTest() throws ParseException {
     }
+
     @Test
     public void getAllRecords_success() throws Exception {
-        List<CardPrintRequest> records = new ArrayList<>(Arrays.asList(cardPrintRequest,cardPrintRequest1,cardPrintRequest2));
+        List<CardPrintRequest> records = new ArrayList<>(Arrays.asList(cardPrintRequest, cardPrintRequest1, cardPrintRequest2));
 
         Mockito.when(cardPrintRequestRepository.findAll()).thenReturn(records);
 
@@ -73,7 +74,9 @@ public class CardPrintRequestRestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.personnelCode", is("74100")));
-    }@Test
+    }
+
+    @Test
     public void createRequest_success() throws Exception {
         CardPrintRequest request = new CardPrintRequest(new CardPrintRequestEmbeddedId("36390", "10.20.152.58"), "6063731098404044", "99999");
 
@@ -89,6 +92,7 @@ public class CardPrintRequestRestControllerTest {
                 .andExpect(jsonPath("$", notNullValue()))
                 .andExpect(jsonPath("$.personnelCode", is("99999")));
     }
+
     @Test
     public void updateCardPrintRequest_success() throws Exception {
         CardPrintRequest request = new CardPrintRequest(new CardPrintRequestEmbeddedId("6071", "10.20.152.18"), "6063731098404044", "99910");
@@ -107,11 +111,12 @@ public class CardPrintRequestRestControllerTest {
                 .andExpect(jsonPath("$.cardPAN", is("6063731098404044")))
                 .andExpect(jsonPath("$.personnelCode", is("99910")));
     }
+
     @Test
     public void updateCardPrintRequest_requestNotFound() throws Exception {
         CardPrintRequest request = new CardPrintRequest(new CardPrintRequestEmbeddedId("36390", "10.20.152.58"), "6063731098404044", "99999");
 
-        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress(request.getId().getBranchCode(),request.getId().getIpAddress())).thenReturn(null);
+        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress(request.getId().getBranchCode(), request.getId().getIpAddress())).thenReturn(null);
 
         MockHttpServletRequestBuilder mockRequest = MockMvcRequestBuilders.put("/api/v1/requests")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -124,9 +129,10 @@ public class CardPrintRequestRestControllerTest {
                 .andExpect(result ->
                         assertEquals("cardPrintRequest not found for this branchCode : 36390", result.getResolvedException().getMessage()));
     }
+
     @Test
     public void deleteRequestById_success() throws Exception {
-        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress(cardPrintRequest1.getId().getBranchCode(),cardPrintRequest1.getId().getIpAddress())).thenReturn(cardPrintRequest1);
+        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress(cardPrintRequest1.getId().getBranchCode(), cardPrintRequest1.getId().getIpAddress())).thenReturn(cardPrintRequest1);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/v1/requests/6071/10.20.152.18/")
@@ -136,7 +142,7 @@ public class CardPrintRequestRestControllerTest {
 
     @Test
     public void deleteRequestById_notFound() throws Exception {
-        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress("3020","10.30.154.23")).thenReturn(null);
+        Mockito.when(cardPrintRequestRepository.findCardPrintRequestsById_BranchCodeAndId_IpAddress("3020", "10.30.154.23")).thenReturn(null);
 
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/v1/requests/3020/10.30.154.23/")

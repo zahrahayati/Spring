@@ -22,6 +22,7 @@ issueDate is : ${issuedDate}
 
 
 <h3><a href="/list-requests">back to List Of request</a></h3>
+<h3><a href="/logout">close</a></h3>
 
 
 </body>

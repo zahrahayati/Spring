@@ -11,15 +11,13 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
 
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.List;
 
 @SpringBootApplication
-public class DemoApplication extends SpringBootServletInitializer implements CommandLineRunner{
+public class DemoApplication extends SpringBootServletInitializer implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(DemoApplication.class);
 
     @Override
@@ -30,8 +28,7 @@ public class DemoApplication extends SpringBootServletInitializer implements Com
     @Autowired
     private CardPrintRequestJDBCTemplate cardPrintRequestJDBCTemplate;
 
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) {
         SpringApplication.run(DemoApplication.class, args);
 
     }
@@ -44,9 +41,9 @@ public class DemoApplication extends SpringBootServletInitializer implements Com
 
     void runJDBC() throws ParseException {
         List<CardPrintRequest> cardPrintRequests = Arrays.asList(
-                new CardPrintRequest(new CardPrintRequestEmbeddedId("60", "10.20.152.15"), "6063731098404032", "74100"),
+                new CardPrintRequest(new CardPrintRequestEmbeddedId("600", "10.20.152.15"), "6063731098404032", "74100"),
                 new CardPrintRequest(new CardPrintRequestEmbeddedId("6071", "10.20.152.18"), "6063731098404055", "75120"),
-                new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "7450")
+                new CardPrintRequest(new CardPrintRequestEmbeddedId("6070", "10.20.152.18"), "6063731098404055", "74501")
         );
         cardPrintRequests.forEach(cardPrintRequest -> {
             log.info("Saving...{}");

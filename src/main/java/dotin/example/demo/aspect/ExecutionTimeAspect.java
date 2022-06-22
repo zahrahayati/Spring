@@ -28,8 +28,7 @@ public class ExecutionTimeAspect {
         }
 
         long executionTime = System.currentTimeMillis() - startTime;
-        System.out.println("Time taken by methhod is " + executionTime);
-        logger.info("Time taken by methhod is " + executionTime);
+        logger.info("Time taken by method is " + executionTime);
         return result;
 
     }
@@ -51,8 +50,7 @@ public class ExecutionTimeAspect {
         }
 
         long executionTime = System.currentTimeMillis() - startTime;
-        System.out.println("Time taken by methhod is " + executionTime);
-        logger.info("Time taken by methhod is " + executionTime);
+        logger.info("Time taken by method is " + executionTime);
         return result;
 
     }
